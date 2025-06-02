@@ -5,19 +5,19 @@ title unnamed api
 SETLOCAL
 
 REM set path to virtual environment
-SET VENV_DIR=.venv
-SET VENV_ACTIVATE=%VENV_DIR%\Scripts\activate.bat
+set VENV_DIR=.venv
+set VENV_ACTIVATE=%VENV_DIR%\Scripts\activate
 
 REM check if venv exists
-if not exists "%VENV_DIR%" (
-	echo creating virtual environment...
+if not exist "%VENV_DIR%" (
+	echo creating virtual environment..
 	python -m venv %VENV_DIR%
 )
 
 REM activate venv
 call "%VENV_ACTIVATE%"
 
-RME install requirements
+REM install requirements
 pip install -r req.txt
 
 REM run api
