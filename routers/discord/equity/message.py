@@ -1,18 +1,34 @@
-from fastapi import APIRouter, Depends, Path, Query
-from typing import Optional
-from starlette.responses import PlainTextResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, update
-from models import UserMessageCount, EquityBank
-import database, models, schemas, crud, math
-from decimal import Decimal, ROUND_HALF_UP
+import math
 
-router = APIRouter(prefix="/message")
+from typing import Optional
+
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import Path
+from fastapi import Query
+
+from decimal import Decimal
+from decimal import ROUND_HALF_UP
+
+from starlette.responses import PlainTextResponse
+
+from sqlalchemy import select
+from sqlalchemy import func
+from sqlalchemy import update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+import utils.database.schemas as schemas
+import utils.database.crud as crud
+from utils.database.init_db import main_db
+from utils.database.models import UserMessageCount
+from utils.database.models import EquityBank
+
+router = APIRouter()
 
 @router.post("/add")
 async def add_user_message(
 	data: schemas.MessageUpdate,
-	db: AsyncSession = Depends(database.get_db)
+	db: AsyncSession = main_db
 ):
 	user = await crud.alter_message_count(db, data.user_id, data.server_id)
 	return {
@@ -24,7 +40,7 @@ async def add_user_message(
 @router.post("/remove")
 async def remove_user_message(
 	data: schemas.MessageUpdate,
-	db: AsyncSession = Depends(database.get_db)
+	db: AsyncSession = main_db
 ):
 	user = await crud.get_message_count(db, data.user_id, data.server_id)
 
@@ -47,7 +63,7 @@ async def remove_user_message(
 async def get_user_message_count(
 	user_id: int = Path(..., description="id of user"),
 	server_id: Optional[int] = Query(None, description="optional id of server, else total message count across all servers will be returned"),
-	db: AsyncSession = Depends(database.get_db)
+	db: AsyncSession = main_db
 ):
 
 	if server_id is not None:
@@ -80,7 +96,7 @@ async def get_user_message_count(
 @router.post("/formula")
 async def formula(
 	data: schemas.FormulaData,
-	db: AsyncSession = Depends(database.get_db)
+	db: AsyncSession = main_db
 ):
 	user = await crud.get_message_count(db, data.user_id, data.server_id)
 

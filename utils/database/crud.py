@@ -1,8 +1,10 @@
+from typing import Optional
+
 from sqlalchemy import func
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import UserMessageCount
-from typing import Optional
+
+from utils.database.models import UserMessageCount
 
 async def alter_message_count(db: AsyncSession, user_id: int, server_id: int, increment: int = 1):
 	result = await db.execute(

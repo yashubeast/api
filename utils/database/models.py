@@ -1,5 +1,11 @@
-from sqlalchemy import Column, Integer, BigInteger, UniqueConstraint, CheckConstraint, Numeric
-from database import Base
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import BigInteger
+from sqlalchemy import UniqueConstraint
+from sqlalchemy import CheckConstraint
+from sqlalchemy import Numeric
+
+from utils.database.init_db import Base
 
 class UserMessageCount(Base):
 	__tablename__ = "user_message_count"
