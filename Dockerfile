@@ -34,8 +34,7 @@ WORKDIR /opt/api
 COPY --from=builder /build /opt/api
 
 # change ownership
-RUN chown -R api:api /opt/api && \
-	chmod +x run.sh
+RUN chown -R api:api /opt/api
 
 # switch to non-root user
 USER api
