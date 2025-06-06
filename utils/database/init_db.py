@@ -6,8 +6,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 
-os.makedirs("./assets", exist_ok=True)
-DB_URL = "sqlite+aiosqlite:///./assets/main.db"
+DB_URL = "postgresql+asyncpg://admin:postgrespassword@postgres:5432/api"
 
 engine = create_async_engine(DB_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
