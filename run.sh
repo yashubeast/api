@@ -5,8 +5,8 @@ set -e
 
 # pull latest changes from the repository
 echo "pulling latest changes.."
-git reset --hard -q HEAD
-git pull -q origin main
+git reset --hard HEAD
+git pull origin main
 
 # activating the virtual environment
 echo "activating virtual environment.."
