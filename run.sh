@@ -19,5 +19,3 @@ python -m pip install -r req.txt -q
 # run the bot
 echo "starting the api.."
 exec uvicorn main:app
-
-read -p "press enter to exit.."

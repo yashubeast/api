@@ -34,7 +34,8 @@ WORKDIR /opt/api
 COPY --from=builder /build /opt/api
 
 # change ownership
-RUN chown -R api:api /opt/api
+RUN chown -R api:api /opt/api && \
+	chmod +x run.sh
 
 # switch to non-root user
 USER api
@@ -43,4 +44,4 @@ USER api
 ENV PATH="/opt/api/.venv/bin:$PATH"
 
 # run the bot
-CMD ["uvicorn", "main:app"]
+CMD ["./run.sh"]
