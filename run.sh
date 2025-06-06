@@ -18,4 +18,4 @@ python -m pip install -r req.txt -q
 
 # run the bot
 echo "starting the api.."
-uvicorn main:app
+exec .venv/bin/uvicorn main:app
