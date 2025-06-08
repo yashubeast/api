@@ -1,55 +1,83 @@
-from typing import Optional
+from datetime import datetime
 
-from sqlalchemy import func
+from sqlalchemy import insert
+from sqlalchemy import update
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from utils.database.models import UserMessageCount
+from decimal import Decimal
 
-async def alter_message_count(db: AsyncSession, user_id: int, server_id: int, increment: int = 1):
-	result = await db.execute(
-		select(UserMessageCount).where(
-			UserMessageCount.user_id == user_id,
-			UserMessageCount.server_id == server_id
-		)
-	)
-	user = result.scalar_one_or_none()
+from models import EquityBank
+from models import DiscordMessages
 
-	if user:
-		user.message_count += increment
-		# prevent negatives
-		if user.message_count < 0:
-			user.message_count = 0
-	else:
-		# only create if increment is positive
-		if increment > 0:
-			user = UserMessageCount(
-				user_id=user_id,
-				server_id=server_id,
-				message_count=increment
-			)
-			db.add(user)
-		else:
-			return None
-	
-	await db.commit()
-	await db.refresh(user)
-	return user
+from utils.database.models import DiscordMessages
 
-async def get_message_count(db: AsyncSession, user_id: int, server_id: Optional[int] = None):
-	if server_id is not None:
+class discord:
+
+	@staticmethod
+	async def get_balance(
+		db: AsyncSession,
+		discord_id: int
+	):
 		result = await db.execute(
-			select(UserMessageCount).where(
-				UserMessageCount.user_id == user_id,
-				UserMessageCount.server_id == server_id
-			)
+			select(EquityBank.coins)
+			.where(EquityBank.discord_id == discord_id)
 		)
 		return result.scalar_one_or_none()
-	else:
 
-		result = await db.execute(
-			select(func.sum(UserMessageCount.message_count))
-			.where(UserMessageCount.user_id == user_id)
+	@staticmethod
+	async def get_discord_message_count(
+		db: AsyncSession,
+		discord_id: int,
+		server_id: int | None = None
+	):
+		stmt = select(DiscordMessages).where(DiscordMessages.discord_id == discord_id)
+		if server_id is not None:
+			stmt = stmt.where(DiscordMessages.server_id == server_id)
+
+		result = await db.execute(stmt)
+		return result.scalar_one_or_none()
+
+	@staticmethod
+	async def get_or_create_equity_account(
+		db: AsyncSession,
+		discord_id: int,
+		coins: Decimal
+	):
+		stmt = select(EquityBank).where(EquityBank.discord_id == discord_id)
+		result = await db.execute(stmt)
+		entry = result.scalar_one_or_none()
+
+		if entry is None:
+			entry = EquityBank(discord_id=discord_id, coins=coins)
+			db.add(entry)
+		else:
+			await db.execute(
+				update(EquityBank)
+				.where(EquityBank.discord_id == discord_id)
+				.values(coins=EquityBank.coins + coins)
+			)
+		await db.commit()
+		return entry
+
+	@staticmethod
+	async def increment_discord_message_count(
+		db: AsyncSession,
+		discord_id: int,
+		server_id: int,
+		timestamp: datetime
+	):
+		stmt = insert(DiscordMessages).values(
+			discord_id=discord_id,
+			server_id=server_id,
+			message_count=1,
+			last_message=timestamp,
+		).on_conflict_do_update(
+			index_elements=["discord_id", "server_id"],
+			set = {
+				"message_count": DiscordMessages.message_count + 1,
+				"last_message": timestamp
+			}
 		)
-		total = result.scalar_one_or_none()
-		return total
+		await db.execute(stmt)
+		await db.commit()

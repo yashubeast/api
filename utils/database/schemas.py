@@ -1,11 +1,13 @@
 from pydantic import BaseModel
+from datetime import datetime
 
-class MessageUpdate(BaseModel):
-	user_id: int
-	server_id: int
-
-class FormulaData(BaseModel):
-	user_id: int
+class DiscordMessageEvaluation(BaseModel):
+	discord_id: int
 	server_id: int
 	message_length: int
-	message_time_gap: float
+	timestamp: datetime
+
+class DiscordPay(BaseModel):
+	sender_id: int
+	receiver_id: int
+	amount: float
