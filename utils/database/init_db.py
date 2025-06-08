@@ -6,7 +6,9 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 
-DB_URL = "postgresql+asyncpg://admin:postgrespassword@postgres:5432/api"
+with open("/run/secrets/PGPASS", "r") as f:
+	db_pass = f.read().strip()
+DB_URL = f"postgresql+asyncpg://admin:{db_pass}@postgres:5432/api"
 
 engine = create_async_engine(DB_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)

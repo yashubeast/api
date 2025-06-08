@@ -1,0 +1,69 @@
+name: gurtyo
+
+secrets:
+  PGPASS:
+    external: true
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD_FILE: /run/secrets/PGPASS
+      POSTGRES_DB: api
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    secrets:
+      - PGPASS
+
+  # pgadmin:
+  #   pull_policy: always 
+  #   image: dpage/pgadmin4:9.4.0
+  #   container_name: pgadmin
+  #   restart: unless-stopped
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@universium.one
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #   ports:
+  #     - '5431:80'
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin
+  #   depends_on:
+  #     - postgres
+  
+  # sem:
+  #   pull_policy: never
+  #   image: sem
+  #   container_name: sem
+  #   restart: unless-stopped
+  #   secrets:
+  #     - TOKEN
+  #   volumes:
+  #     - sem:/opt/sem/assets
+  
+  api:
+    pull_policy: never
+    image: api
+    container_name: api
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/PGPASS
+    volumes:
+      - api:/opt/api/assets
+    secrets:
+      - PGPASS
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
+  # pgadmin:
+  # sem:
+  api:
+
+
+networks:
+  default:
+    name: yogurt
