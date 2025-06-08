@@ -8,10 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 with open("/run/secrets/PGPASS", "r") as f:
 	db_pass = f.read().strip()
-print("Database password loaded from secret.")
-print("----------------------------------------------------------------------------------------------")
-print(db_pass)
-print("----------------------------------------------------------------------------------------------")
 DB_URL = f"postgresql+asyncpg://admin:{db_pass}@postgres:5432/api"
 
 engine = create_async_engine(DB_URL, echo=False)

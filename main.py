@@ -5,6 +5,9 @@ from fastapi import FastAPI
 import utils.database.init_db as init_db
 import utils.database.models as models
 
+with open("/run/secrets/PGPASS", "r") as f:
+	print(f.read().strip())
+
 app = FastAPI()
 
 @app.on_event("startup")
