@@ -18,4 +18,4 @@ python -m pip install -r req.txt -q
 
 # run the bot
 echo "starting the api.."
-python run.py
+exec uvicorn main:app --host 0.0.0.0 --port 8000
