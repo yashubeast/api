@@ -1,4 +1,4 @@
-name: gurtyo
+# name: gurtyo
 
 secrets:
   PGPASS:
@@ -18,20 +18,19 @@ services:
     secrets:
       - PGPASS
 
-  # pgadmin:
-  #   pull_policy: always 
-  #   image: dpage/pgadmin4:9.4.0
-  #   container_name: pgadmin
-  #   restart: unless-stopped
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: admin@universium.one
-  #     PGADMIN_DEFAULT_PASSWORD: admin
-  #   ports:
-  #     - '5431:80'
-  #   volumes:
-  #     - pgadmin:/var/lib/pgadmin
-  #   depends_on:
-  #     - postgres
+  pgadmin:
+    image: dpage/pgadmin4:9.4.0
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@universium.one
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5431:80'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - postgres
   
   # sem:
   #   pull_policy: never
@@ -44,7 +43,6 @@ services:
   #     - sem:/opt/sem/assets
   
   api:
-    pull_policy: never
     image: api
     container_name: api
     restart: unless-stopped
@@ -59,10 +57,9 @@ services:
 
 volumes:
   pgdata:
-  # pgadmin:
+  pgadmin:
   # sem:
   api:
-
 
 networks:
   default:
